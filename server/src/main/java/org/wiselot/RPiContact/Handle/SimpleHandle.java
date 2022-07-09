@@ -1,21 +1,27 @@
 package org.wiselot.RPiContact.Handle;
 
+import org.apache.log4j.Logger;
+
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 
-public abstract class SimpleHandle {
+public abstract class SimpleHandle extends Thread{
 
     protected static ExecutorService threadPool;
-    protected int defaultPort = -1;
+    protected int port = -1;
 
-    public SimpleHandle(ThreadPoolExecutor pool){
+    protected ArrayList<Socket> sockets;
+
+    protected static Logger logger;
+
+    public SimpleHandle(ThreadPoolExecutor pool,int port){
         threadPool = pool;
+        this.port = port;
     }
-    public SimpleHandle(ThreadPoolExecutor pool,int defaultPort){
-        threadPool = pool;
-        defaultPort = defaultPort;
-    }
+
+
 
     public static class RunnableNextHandle extends Thread{
 

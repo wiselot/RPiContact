@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
 public class AccountDataBase extends DataBase{
@@ -105,6 +106,19 @@ public class AccountDataBase extends DataBase{
 
         public UUID getUuid(){
             return uuid;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Account account = (Account) o;
+            return Objects.equals(name, account.name) && Objects.equals(passwd, account.passwd) && Objects.equals(uuid, account.uuid);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, passwd, uuid);
         }
     }
 }

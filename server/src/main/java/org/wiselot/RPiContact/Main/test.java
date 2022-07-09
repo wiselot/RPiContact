@@ -1,12 +1,20 @@
 package org.wiselot.RPiContact.Main;
 
+import org.jetbrains.annotations.NotNull;
 import org.wiselot.RPiContact.DataPool.AccountDataBase;
 import org.wiselot.RPiContact.DataPool.MessageDataBase;
+import org.wiselot.RPiContact.Handle.AccountHandle;
+import org.wiselot.RPiContact.Handle.MessageHandle;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class test {
     /*
@@ -23,7 +31,7 @@ public class test {
     * */
     public static void main(String[] args)
     {
-        /*
+
         AccountDataBase accountDataBase = new AccountDataBase("com.mysql.cj.jdbc.Driver","RPiAccount");
         accountDataBase.connect("jdbc:mysql://116.62.35.30:3306/Account?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
                 ,"remote_op","k7omain%");
@@ -34,16 +42,22 @@ public class test {
                         TimeUnit.SECONDS,
                         new ArrayBlockingQueue<Runnable>(2),
                         Executors.defaultThreadFactory(),
-                        new ThreadPoolExecutor.AbortPolicy()));
-        try {
-            accountHandle.startPieceHandle(9990);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-         */
+                        new ThreadPoolExecutor.AbortPolicy()),9990);
+        accountHandle.start();
+
         MessageDataBase md = new MessageDataBase("com.mysql.cj.jdbc.Driver","RPiMessage");
         md.connect("jdbc:mysql://116.62.35.30:3306/Message?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
                 ,"remote_op","k7omain%");
+        MessageHandle messageHandle = new MessageHandle(md,
+                new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),
+                        5,
+                        6,
+                        TimeUnit.SECONDS,
+                        new ArrayBlockingQueue<Runnable>(2),
+                        Executors.defaultThreadFactory(),
+                        new ThreadPoolExecutor.AbortPolicy()),9991);
+        messageHandle.start();
+        /*
         AccountDataBase ad = new AccountDataBase("com.mysql.cj.jdbc.Driver","RPiAccount");
         ad.connect("jdbc:mysql://116.62.35.30:3306/Account?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
                 ,"remote_op","k7omain%");
@@ -58,8 +72,11 @@ public class test {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+         */
     }
-    public static void displayMsg(MessageDataBase.Message message,AccountDataBase ad) throws SQLException {
+
+    public static void displayMsg(MessageDataBase.@NotNull Message message, @NotNull AccountDataBase ad) throws SQLException {
         System.out.println("[" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(message.getSendDate().getTime()) + "]" +
                 ad.getAccount(message.getSendUUID()).getName() + " to " +
                 ad.getAccount(message.getGetUUID()).getName() + " :" +

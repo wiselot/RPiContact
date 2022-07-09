@@ -17,13 +17,14 @@ public class DataBase {
             throw new RuntimeException(e);
         }
     }
-    public void connect(String host,String user,String passwd)
+    public DataBase connect(String host,String user,String passwd)
     {
         try {
             connection = DriverManager.getConnection(host, user, passwd);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return this;
     }
     public ResultSet selectObjects(@NotNull Object[] objects, String sql) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(sql);
